@@ -1,0 +1,759 @@
+---
+swagger: "2.0"
+info:
+  description: "Rules resource defines the set of rules for a Project. When a Project\
+    \ Resource is created,  there is no rules attached by default.User can use a PUT\
+    \ on the project resource to create a set of rules.Rules Resource does not have\
+    \ a id. (We can change the behavior for v3 APIs where we can have reference to\
+    \ rule ids)User can update the Rules resource with PUT\n"
+  version: "1.0.0"
+  title: "LPP REST API Specification - v3"
+  termsOfService: "https://users.linkcreationstudio.com/termsofuse"
+host: "virtserver.swaggerhub.com"
+basePath: "/livepaper/LPP-V3-API-Specification/1.0.0"
+schemes:
+- "https"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /v3/projects:
+    get:
+      tags:
+      - "Project"
+      description: "Returns all projects from the system that the user has access\
+        \ to"
+      operationId: "listrojects"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        200:
+          description: "project response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/project"
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/errorModel"
+    post:
+      tags:
+      - "Project"
+      description: "For existing accounts, a project is created for you, and all of\
+        \ your pre-existing resources (Links, Triggers, Payoffs, etc.) will be available\
+        \ under this project"
+      operationId: "createProject"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "project"
+        description: "project to add to the existing accounts"
+        required: true
+        schema:
+          $ref: "#/definitions/newproject"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Content-Type"
+        in: "header"
+        description: "Content Type"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        200:
+          description: "project response"
+          schema:
+            $ref: "#/definitions/project"
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/errorModel"
+  /v3/projects/{project-id}:
+    get:
+      tags:
+      - "Project"
+      description: "Returns a project based on a single ID."
+      operationId: "getProject"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "project-id"
+        in: "path"
+        description: "ID of project to fetch"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        200:
+          description: "Ok.Request is processed successfully."
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/errorModel"
+    put:
+      tags:
+      - "Project"
+      description: "update a single project based on the ID supplied"
+      operationId: "deleteproject"
+      parameters:
+      - name: "project-id"
+        in: "path"
+        description: "ID of project to update"
+        required: true
+        type: "string"
+        format: "string"
+      - in: "body"
+        name: "project"
+        description: "project to add to the existing accounts"
+        required: true
+        schema:
+          $ref: "#/definitions/newproject"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Content-Type"
+        in: "header"
+        description: "Content Type"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        200:
+          description: "Ok.Request is processed successfully."
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/errorModel"
+  /v3/projects/{project-id}/properties:
+    put:
+      tags:
+      - "Project Properties"
+      description: "Update project properties."
+      operationId: "updateProjectProperties"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "project-id"
+        in: "path"
+        description: "ID of project to fetch"
+        required: true
+        type: "string"
+        format: "string"
+      - in: "body"
+        name: "properties"
+        description: "Add Properties"
+        required: true
+        schema:
+          $ref: "#/definitions/propertiesobject"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        200:
+          description: "Ok.Request is processed successfully."
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/errorModel"
+  /v3/projects/{project-id}/memberships/{membership-Id}:
+    get:
+      tags:
+      - "Project Memberships"
+      description: "Get the membership details using the membership ID."
+      operationId: "getProjectMemberships"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "project-id"
+        in: "path"
+        description: "ID of project to fetch"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "membership-Id"
+        in: "path"
+        description: "ID of project membership to fetch"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Accept"
+        in: "header"
+        description: "Accept Type"
+        required: false
+        type: "string"
+        format: "string"
+      responses:
+        200:
+          description: "project membership response"
+          schema:
+            $ref: "#/definitions/membershipResponce"
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        409:
+          description: "(Conflict) For Create Membership :If the user is already a\
+            \ member of this project.For Delete Membership :If user deletes membership\
+            \ from default project of account."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/errorModel"
+    delete:
+      tags:
+      - "Project Memberships"
+      description: "Remove a member from a project based on membership-Id"
+      operationId: "deleteprojectMembership"
+      parameters:
+      - name: "project-id"
+        in: "path"
+        description: "ID of project to update"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "membership-Id"
+        in: "path"
+        description: "ID of project membership to fetch"
+        required: true
+        type: "string"
+        format: "string"
+      - in: "body"
+        name: "project"
+        description: "project to add to the existing accounts"
+        required: true
+        schema:
+          $ref: "#/definitions/newproject"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        204:
+          description: "Ok.Request is processed successfully."
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        409:
+          description: "(Conflict) For Create Membership :If the user is already a\
+            \ member of this project.For Delete Membership :If user deletes membership\
+            \ from default project of account."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/errorModel"
+  /v3/projects/{project-id}/memberships:
+    get:
+      tags:
+      - "Project Memberships"
+      description: "List List Of Project"
+      operationId: "listMembership"
+      parameters:
+      - name: "project-id"
+        in: "path"
+        description: "ID of project to update"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Accept"
+        in: "header"
+        description: "Accept Type"
+        required: false
+        type: "string"
+        format: "string"
+      responses:
+        200:
+          description: "Ok.Request is processed successfully."
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        409:
+          description: "(Conflict) For Create Membership :If the user is already a\
+            \ member of this project.For Delete Membership :If user deletes membership\
+            \ from default project of account."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/errorModel"
+    post:
+      tags:
+      - "Project Memberships"
+      description: "Add Membership."
+      operationId: "addMembership"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "project-id"
+        in: "path"
+        description: "ID of project to fetch"
+        required: true
+        type: "string"
+        format: "string"
+      - in: "body"
+        name: "membership"
+        description: "Add Membership"
+        required: true
+        schema:
+          $ref: "#/definitions/newMembership"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Content-Type"
+        in: "header"
+        description: "Content Type"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Accept"
+        in: "header"
+        description: "Accept Type"
+        required: false
+        type: "string"
+        format: "string"
+      responses:
+        200:
+          description: "project membership response"
+          schema:
+            $ref: "#/definitions/membershipResponce"
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        409:
+          description: "(Conflict) For Create Membership :If the user is already a\
+            \ member of this project.For Delete Membership :If user deletes membership\
+            \ from default project of account."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/errorModel"
+  /v3/projects/{project_id}/rules:
+    get:
+      tags:
+      - "Project Rules "
+      description: "Rules resource defines the set of rules for a Project."
+      operationId: "updateRules"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "projectid for rules"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Content-Type"
+        in: "header"
+        description: "Content Type"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Accept"
+        in: "header"
+        description: "format of response"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        202:
+          description: "(Accepted) Request to create resource submitted"
+          schema:
+            $ref: "#/definitions/rulesresponce"
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+    put:
+      tags:
+      - "Project Rules "
+      description: "Rules resource defines the set of rules for a Project."
+      operationId: "updaterules"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "projectid for rules"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Content-Type"
+        in: "header"
+        description: "Content Type"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Accept"
+        in: "header"
+        description: "format of response"
+        required: true
+        type: "string"
+        format: "string"
+      - in: "body"
+        name: "rules"
+        description: "Update Rules API allows to modify an existing rule set."
+        required: true
+        schema:
+          $ref: "#/definitions/newRules"
+      responses:
+        202:
+          description: "(Accepted) Request to create resource submitted"
+          schema:
+            $ref: "#/definitions/rulesresponce"
+        400:
+          description: "Bad Request"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        503:
+          description: "(Service unavailable) If there is a temporary failure in fulfilling\
+            \ the request.Client can retry based on the Retry-After header value.If\
+            \ no Retry-After is given, the client SHOULD handle the response as it\
+            \ would for a 500 response."
+definitions:
+  membershipResponce:
+    type: "object"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+      dateCreated:
+        type: "string"
+      role:
+        type: "string"
+      user:
+        $ref: "#/definitions/membershipResponce_user"
+      link:
+        type: "array"
+        items:
+          $ref: "#/definitions/link"
+  rulesresponce:
+    type: "object"
+    required:
+    - "projectId"
+    properties:
+      projectId:
+        type: "string"
+      ruleId:
+        type: "string"
+      dateCreated:
+        type: "string"
+      dateModified:
+        type: "string"
+      countryAllowed:
+        type: "array"
+        items:
+          type: "string"
+      countryDenied:
+        type: "array"
+        items:
+          type: "string"
+      publicScanExceedsCountAlert:
+        type: "string"
+      privateScanExceedsCountAlert:
+        type: "string"
+      scanInactiveAlert:
+        type: "string"
+      publicScanExceedsCountWarning:
+        type: "string"
+      privateScanExceedsCountWarning:
+        type: "string"
+      scanInactiveNone:
+        type: "string"
+      link:
+        type: "array"
+        items:
+          $ref: "#/definitions/link"
+  link:
+    type: "object"
+    required:
+    - "href"
+    - "rel"
+    properties:
+      rel:
+        type: "string"
+      href:
+        type: "string"
+  user:
+    type: "object"
+    required:
+    - "emailId"
+    properties:
+      emailId:
+        type: "string"
+  newMembership:
+    type: "object"
+    required:
+    - "membership"
+    properties:
+      membership:
+        $ref: "#/definitions/membership"
+  membership:
+    type: "object"
+    required:
+    - "user"
+    properties:
+      user:
+        $ref: "#/definitions/user"
+      role:
+        type: "string"
+  newRules:
+    type: "object"
+    required:
+    - "rules"
+    properties:
+      rules:
+        $ref: "#/definitions/rules"
+  rules:
+    type: "object"
+    required:
+    - "countryAllowed"
+    properties:
+      countryAllowed:
+        type: "array"
+        items:
+          type: "string"
+      countryDenied:
+        type: "array"
+        items:
+          type: "string"
+      publicScanExceedsCountAlert:
+        type: "string"
+      privateScanExceedsCountAlert:
+        type: "string"
+      scanInactiveAlert:
+        type: "string"
+      publicScanExceedsCountWarning:
+        type: "string"
+      privateScanExceedsCountWarning:
+        type: "string"
+      scanInactiveWarning:
+        type: "string"
+      scanInactiveNone:
+        type: "string"
+  project:
+    type: "object"
+    required:
+    - "id"
+    - "name"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      dateCreated:
+        type: "string"
+      dateModified:
+        type: "string"
+      link:
+        type: "array"
+        items:
+          $ref: "#/definitions/link"
+      accountId:
+        type: "string"
+      createdBy:
+        type: "string"
+  newproject:
+    type: "object"
+    required:
+    - "name"
+    properties:
+      name:
+        type: "string"
+  propertiesobject:
+    type: "object"
+    properties:
+      Properties:
+        $ref: "#/definitions/propertiesmap"
+  propertiesmap:
+    type: "object"
+    description: "a (key, MapItem) map. `default`is an example key"
+    additionalProperties:
+      $ref: "#/definitions/MapItem"
+  MapItem:
+    type: "string"
+    example: "value"
+  errorModel:
+    type: "object"
+    required:
+    - "errorCode"
+    - "httpCode"
+    properties:
+      serviceName:
+        type: "string"
+      apiVersion:
+        type: "string"
+      requestId:
+        type: "string"
+      httpCode:
+        type: "integer"
+        format: "int32"
+      errorDescription:
+        type: "string"
+      errorCode:
+        type: "string"
+  membershipResponce_user:
+    required:
+    - "emailId"
+    properties:
+      emailId:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
