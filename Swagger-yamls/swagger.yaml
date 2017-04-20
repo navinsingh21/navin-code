@@ -736,8 +736,10 @@ definitions:
     properties:
       serviceName:
         type: "string"
+        example: "testing"
       apiVersion:
         type: "string"
+        example: "v2"
       requestId:
         type: "string"
       httpCode:
