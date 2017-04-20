@@ -736,7 +736,7 @@ definitions:
     properties:
       serviceName:
         type: "string"
-        example: "testing"
+        example: "testing123"
       apiVersion:
         type: "string"
         example: "v2"
