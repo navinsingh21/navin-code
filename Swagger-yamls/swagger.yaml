@@ -119,6 +119,8 @@ paths:
       responses:
         200:
           description: "Ok.Request is processed successfully."
+          schema:
+            $ref: "#/definitions/project"
         400:
           description: "Bad Request"
         401:
@@ -169,6 +171,8 @@ paths:
       responses:
         200:
           description: "Ok.Request is processed successfully."
+          schema:
+            $ref: "#/definitions/project"
         400:
           description: "Bad Request"
         401:
@@ -350,7 +354,7 @@ paths:
     get:
       tags:
       - "Project Memberships"
-      description: "List List Of Project"
+      description: "List all memberships of a project."
       operationId: "listMembership"
       parameters:
       - name: "project-id"
@@ -374,6 +378,8 @@ paths:
       responses:
         200:
           description: "Ok.Request is processed successfully."
+          schema:
+            $ref: "#/definitions/membershipResponce"
         400:
           description: "Bad Request"
         401:
@@ -572,10 +578,13 @@ definitions:
     properties:
       id:
         type: "string"
+        example: "xksksksnsj"
       dateCreated:
         type: "string"
+        example: "2014-06-05T11:42:23.000+0000"
       role:
         type: "string"
+        example: "owner"
       user:
         $ref: "#/definitions/membershipResponce_user"
       link:
@@ -627,8 +636,10 @@ definitions:
     properties:
       rel:
         type: "string"
+        example: "self"
       href:
         type: "string"
+        example: "https://www.livepaperapi.com/api/v2/<resource>/jSKjxRarRGeRRlj_9hSL7A"
   user:
     type: "object"
     required:
@@ -636,6 +647,7 @@ definitions:
     properties:
       emailId:
         type: "string"
+        example: "user@gmail.com"
   newMembership:
     type: "object"
     required:
@@ -652,6 +664,7 @@ definitions:
         $ref: "#/definitions/user"
       role:
         type: "string"
+        example: "owner"
   newRules:
     type: "object"
     required:
@@ -694,20 +707,25 @@ definitions:
     properties:
       id:
         type: "string"
+        example: "jSKjxRarRGeRRlj_9hSL7A"
       name:
         type: "string"
+        example: "MyNewProject"
       dateCreated:
         type: "string"
+        example: "2014-04-08T08:16:25.723+0000"
       dateModified:
         type: "string"
+        example: "2014-04-08T08:16:25.723+0000"
       link:
         type: "array"
         items:
           $ref: "#/definitions/link"
       accountId:
         type: "string"
+        example: "056vwtsy03zkexce9rjxwii65hmbb84p"
       createdBy:
-        type: "string"
+        $ref: "#/definitions/user"
   newproject:
     type: "object"
     required:
@@ -715,6 +733,7 @@ definitions:
     properties:
       name:
         type: "string"
+        example: "newproject"
   propertiesobject:
     type: "object"
     properties:
@@ -736,10 +755,8 @@ definitions:
     properties:
       serviceName:
         type: "string"
-        example: "testing123"
       apiVersion:
         type: "string"
-        example: "v2"
       requestId:
         type: "string"
       httpCode:
@@ -755,7 +772,10 @@ definitions:
     properties:
       emailId:
         type: "string"
+        example: "user@gmail.com"
       firstName:
         type: "string"
+        example: "John"
       lastName:
         type: "string"
+        example: "Doe"
