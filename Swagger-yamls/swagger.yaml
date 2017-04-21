@@ -18,6 +18,79 @@ consumes:
 produces:
 - "application/json"
 paths:
+  /auth/v3/token:
+    post:
+      tags:
+      - "Token "
+      description: "Creates a new token for access."
+      operationId: "createToken"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      - name: "Content-Type"
+        in: "header"
+        description: "Content Type"
+        required: true
+        type: "string"
+        format: "string"
+      - in: "body"
+        name: "grant"
+        description: "create new token for authorization."
+        required: true
+        schema:
+          $ref: "#/definitions/param"
+      responses:
+        200:
+          description: "token response"
+          schema:
+            $ref: "#/definitions/accessToken"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        500:
+          description: "(Service unavailable) Server unable to process current request."
+  /auth/v3/accounts/{account_id}:
+    get:
+      tags:
+      - "Account "
+      description: "Get existing Account details from Account ID"
+      operationId: "getAccount"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "account_id"
+        in: "path"
+        description: "accountId for account"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        in: "header"
+        description: "access token key"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        200:
+          description: "accounts response"
+          schema:
+            $ref: "#/definitions/accountsobject"
+        401:
+          description: "(Unauthorized) If the authentication fails."
+        403:
+          description: "(Forbidden) If user not belong to this account."
+        404:
+          description: "( Not found) If the account doesn’t exists.."
+        500:
+          description: "(Service unavailable) Server unable to process current request."
   /v3/projects:
     get:
       tags:
@@ -590,7 +663,7 @@ definitions:
       link:
         type: "array"
         items:
-          $ref: "#/definitions/link"
+          $ref: "#/definitions/membershiplink"
   rulesresponce:
     type: "object"
     required:
@@ -627,8 +700,8 @@ definitions:
       link:
         type: "array"
         items:
-          $ref: "#/definitions/link"
-  link:
+          $ref: "#/definitions/ruleslink"
+  accountlink:
     type: "object"
     required:
     - "href"
@@ -639,7 +712,43 @@ definitions:
         example: "self"
       href:
         type: "string"
-        example: "https://www.livepaperapi.com/api/v2/<resource>/jSKjxRarRGeRRlj_9hSL7A"
+        example: "https://www.livepaperapi.com/api/v3/account/0000g07wgygmdsld9u8onuo55rpufy2o"
+  projectlink:
+    type: "object"
+    required:
+    - "href"
+    - "rel"
+    properties:
+      rel:
+        type: "string"
+        example: "self"
+      href:
+        type: "string"
+        example: "https://www.livepaperapi.com/api/v3/project/zZLsnjy"
+  membershiplink:
+    type: "object"
+    required:
+    - "href"
+    - "rel"
+    properties:
+      rel:
+        type: "string"
+        example: "self"
+      href:
+        type: "string"
+        example: "https://www.livepaperapi.com/api/v3/project/zZLsnjy/memberships/n8UjZy_nSei1ZirO4huljA"
+  ruleslink:
+    type: "object"
+    required:
+    - "href"
+    - "rel"
+    properties:
+      rel:
+        type: "string"
+        example: "self"
+      href:
+        type: "string"
+        example: "https://www.livepaperapi.com/api/v3/project/zZLsnjy/rules/s09_AqHhTaCx2-2AQE1W4Q"
   user:
     type: "object"
     required:
@@ -720,7 +829,7 @@ definitions:
       link:
         type: "array"
         items:
-          $ref: "#/definitions/link"
+          $ref: "#/definitions/projectlink"
       accountId:
         type: "string"
         example: "056vwtsy03zkexce9rjxwii65hmbb84p"
@@ -747,6 +856,94 @@ definitions:
   MapItem:
     type: "string"
     example: "value"
+  accountsobject:
+    type: "object"
+    properties:
+      account:
+        $ref: "#/definitions/account"
+  account:
+    type: "object"
+    required:
+    - "name"
+    properties:
+      name:
+        type: "string"
+        example: "Test Client"
+      id:
+        type: "string"
+        example: "testClientID"
+      ownerId:
+        type: "string"
+        example: "testClientID"
+      description:
+        type: "string"
+        example: "null"
+      dateCreated:
+        type: "string"
+        example: "2013-06-10 12:40:18.000+000"
+      dateModified:
+        type: "string"
+        example: "2013-06-10 12:40:18.000+000"
+      customerKey:
+        type: "string"
+        example: "4e4f39b"
+      plan:
+        type: "string"
+        example: "triggerSegregated"
+      quotas:
+        type: "array"
+        items:
+          $ref: "#/definitions/quotas"
+      link:
+        type: "array"
+        items:
+          $ref: "#/definitions/accountlink"
+  quotas:
+    type: "object"
+    required:
+    - "limit"
+    - "type"
+    properties:
+      type:
+        type: "string"
+        example: "qrcode"
+      limit:
+        type: "integer"
+        format: "int64"
+        example: 100001
+      used:
+        type: "integer"
+        format: "int64"
+        example: 790
+  accessToken:
+    type: "object"
+    required:
+    - "apiVersion"
+    - "serviceName"
+    properties:
+      serviceName:
+        type: "string"
+        example: "auth"
+      apiVersion:
+        type: "string"
+        example: "v3"
+      accessToken:
+        type: "string"
+        example: "YWxzMGdv6T...5MXBpQVZNTVE9"
+      scope:
+        type: "string"
+        example: "default"
+  param:
+    type: "object"
+    required:
+    - "grant_type"
+    properties:
+      scope:
+        type: "string"
+        example: "default"
+      grant_type:
+        type: "string"
+        example: "client_credentials"
   errorModel:
     type: "object"
     required:
@@ -757,15 +954,19 @@ definitions:
         type: "string"
       apiVersion:
         type: "string"
+        example: "v3"
       requestId:
         type: "string"
+        example: "a554d520-2584-4e2b-b5e9-329ef79d0978"
       httpCode:
         type: "integer"
         format: "int32"
       errorDescription:
         type: "string"
+        example: "<dynamic error>"
       errorCode:
         type: "string"
+        example: "<dynamic error code>"
   membershipResponce_user:
     required:
     - "emailId"
