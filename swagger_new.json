@@ -1,0 +1,2118 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Link v3 API",
+        "description": "Link Servcie can be accessed programmatically from your program using Web APIs.\n # API Overview \n  Link supports RESTful APIs. Follows [Oauth 2.0](https://tools.ietf.org/html/rfc6749) standards for Authentication and Authorization. Responses are in JSON.\n  ## Steps for using APIs\n  1. Sign in or create a account with [Link](https://mylinks.linkcreationstudio.com)\n  2. Obtain your user credentials, Link Supports *Oauth 2.0 client credentials* grant type for API Authentication and Authorization.\n  3. Obtain an access token using your credentials.\n  4. Use access token to access APIs.\n  # API Objects\n  ## User\n A user Object gets created when a user signs up in to the Link Portal. This object holds the information about the user and the  credentials to access the APIs on behalf of the user.\n  ## Account\n A default account is created for every user that signs up.\n  ## Project\n  A Project is an entity, in an account. Project is the container for other objects like Uids, Batches etc. Project is a unit for collaborations. You can create a project, invite other users to the project and they get access to the resources with in that Project. Every signed up user will get  a default project.\n  \n \n  ## Memberships\n  ## Uid\n  ## Batch\n  ## Properties\n  ## Rules\n  ## Events\n  \n  \n",
+        "termsOfService": "https://users.linkcreationstudio.com/termsofuse"
+    },
+    "schemes": [
+        "https"
+    ],
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "To access the Serialization API, a valid LPP access token must be passed in all the queries in the 'Authorization' header.\nTo obtain an access token, you need to make a request to the LPP service with your account credentials.\nPlease visit  'https://mylinks.linkcreationstudio.com/developer/doc/v3/auth/' for more information on how to obtain the access token.\nMake the value of the 'Authorization' header equal to 'Bearer ACCESS_TOKEN', where ACCESS_TOKEN is your access token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "security": [
+        {
+            "Bearer": []
+        }
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/auth/v3/token": {
+            "post": {
+                "tags": [
+                    "Authentication "
+                ],
+                "description": "The Authentication API enables generation and validation of authentication access tokens to access other Link APIs. You will need a valid access token to make all other API calls.\n\n<b>Each access token that you create is valid for 1 hour. Use of an expired token will result in the error response ACCESS_TOKEN_EXPIRED. To be safe, monitor the token lifespan or obtain a new token as needed.</b>\n",
+                "operationId": "createToken",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "The basic auth token that is generated from link creation studio.<br>The token should be of format <div>Basic {your Basic Auth from above}</div>",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "grant_type",
+                        "in": "body",
+                        "description": "Create new token for authorization. scope is optional.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/param"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/accessToken"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        },
+                        "examples": {
+                            "error": [
+                                {
+                                    "requestId": "28dec8fd-0da2-4065-9f73-3c56d92c01a1",
+                                    "httpCode": 401,
+                                    "errorDescription": "Invalid authorization header",
+                                    "errorCode": 1000
+                                }
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "If user does not belongs to this account."
+                    },
+                    "500": {
+                        "description": "InternalServerError"
+                    }
+                }
+            }
+        },
+        "/auth/v3/users/{user_id}": {
+            "get": {
+                "tags": [
+                    "Users "
+                ],
+                "description": "Creates a new user.",
+                "operationId": "createUser",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "client ID of the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/newuserresponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "InternalServerError"
+                    }
+                }
+            }
+        },
+        "/auth/v3/accounts/{account_id}": {
+            "get": {
+                "tags": [
+                    "Account "
+                ],
+                "description": "Get existing Account details from Account ID",
+                "operationId": "getAccount",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "account_id",
+                        "in": "path",
+                        "description": "accountId for account",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/accountsobject"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "InternalServerError"
+                    }
+                }
+            }
+        },
+        "/v3/projects": {
+            "get": {
+                "tags": [
+                    "Project"
+                ],
+                "description": "Returns all projects from the system that the user has access to",
+                "operationId": "listrojects",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Project"
+                ],
+                "description": "A Project is an entity, in an account, in which you can create resources like uid, batches, Payoffs and etc. You can create projects in your account and then invite other users to become Members of these projects. The members of a project have access to all of the resources in that project.",
+                "operationId": "createProject",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "body",
+                        "description": "project to add to the existing accounts",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/newproject"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/project"
+                        }
+                    },
+                    "400": {
+                        "description": "BadRequest"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "503": {
+                        "description": "Service UNavailabe"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/v3/projects/{project_id}": {
+            "get": {
+                "tags": [
+                    "Project"
+                ],
+                "description": "Returns a project based on a single ID.",
+                "operationId": "getProject",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "description": "ID of project to fetch",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/project"
+                        }
+                    },
+                    "400": {
+                        "description": "BadRequest"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "503": {
+                        "description": "Service UNavailabe"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Project"
+                ],
+                "description": "update a single project based on the ID supplied",
+                "operationId": "deleteproject",
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "description": "ID of project to update",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "project",
+                        "in": "body",
+                        "description": "Project name is only the required, rest of the attributres are optional",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/newproject"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/project"
+                        }
+                    },
+                    "400": {
+                        "description": "BadRequest"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "503": {
+                        "description": "Service UNavailabe"
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/errorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v3/batches": {
+            "post": {
+                "tags": [
+                    "Batch"
+                ],
+                "description": "<b>Create Batch API.</b></br> Generates  uids in batch .</br> </br></br> <b> Supported mark types :</b> <li>qrCode</li> <li>secureQrCode</li> <li>secureQrCodeGuilloche</li> <li>qrCodeGuilloche</li> <li>shortUrl</li> <li>watermark </li> <li>sgtinWatermark </li>",
+                "operationId": "createBatch",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "application/json",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "batch",
+                        "in": "body",
+                        "description": "create Batch request.</br></br> \n| Param Name | Description |\n|------------|-------------|\n|<b>name*</b>|mandatory    |\n|<b>projectId*</b>|mandatory, project in which batch should be created   |\n|<b>type*</b>|mandatory, supported types are mentioned above.    |\n|<b>count*</b>|mandatory, batch size.   |\n|<b>gtin</b>|optional, but its mandatory if type is \"sgtinWatermark\".   |\n|<b>startSerialNumber</b>|optional, but its mandatory if type is \"sgtinWatermark\".   |\n |<b>payoffId</b>|optional. if provided, it will be linked to batch.   |\n",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/newBatch"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted. Job Accepted but processing is not started. Update the status of task to \"submitted\" using the API provided in location header.",
+                        "headers": {
+                            "HTTP/1.1 202": {
+                                "description": "HTTP responce",
+                                "type": "string"
+                            },
+                            "Content-Type": {
+                                "description": "Content Type",
+                                "type": "string"
+                            },
+                            "Location": {
+                                "description": "https:///www.livepaperapi.com/api/v3/tasks/9ynVrwbeQPaR60Mr81HC9g",
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden. </br> User doesnt have access to account/project.</br> Quota to create marks is 0 or not sufficient."
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "503": {
+                        "description": "Service Unavailable, Unable to process request. Try later."
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Batch"
+                ],
+                "description": "<b>GET all batches for the project</b></br> Returns all batch resources in a project.",
+                "operationId": "listBatch",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "projectId",
+                        "in": "query",
+                        "description": "Returns all batches created in this project.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "application/json",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "application/json",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK, Returns all batches in a project.",
+                        "schema": {
+                            "$ref": "#/definitions/listBatches"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized, If the authentication fails."
+                    },
+                    "403": {
+                        "description": "Forbidden, If user doesn't have access to this resource."
+                    },
+                    "404": {
+                        "description": "Not found, If resource doesnt exists."
+                    },
+                    "500": {
+                        "description": "Internal Server Error,  Server unable to process current request."
+                    }
+                }
+            }
+        },
+        "/api/v3/batches/{batch_id}": {
+            "get": {
+                "tags": [
+                    "Batch"
+                ],
+                "description": "<b>GET Batch Details</b> </br> Returns batch resource.",
+                "operationId": "getBatch",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "batch_id",
+                        "in": "path",
+                        "description": "batchId for batch",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "application/json",
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK, batch response",
+                        "headers": {
+                            "Location": {
+                                "type": "string",
+                                "description": "http:///www.livepaperapi.com/api/v3/batches/n7HyJKK"
+                            }
+                        },
+                        "schema": {
+                            "$ref": "#/definitions/batchResponce"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden.  User doesnt have access to resource."
+                    },
+                    "404": {
+                        "description": "Not Found.  If resource doesn't exist."
+                    },
+                    "503": {
+                        "description": "Service Unavailable, Unable to process request. Try later."
+                    }
+                }
+            }
+        },
+        "/objects/v3/batches/{batch_id}/uids/download": {
+            "get": {
+                "tags": [
+                    "Batch"
+                ],
+                "description": "<b>GET UIDs for a batch</b> </br> gets an array of the uids for a given batch id.",
+                "operationId": "getuids",
+                "produces": [
+                    "text/csv"
+                ],
+                "parameters": [
+                    {
+                        "name": "batch_id",
+                        "in": "path",
+                        "description": "URL should contain valid batch Id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "text/csv",
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK, Returns list of UIDs  in a file."
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden, User doesn't have access to batch ."
+                    },
+                    "404": {
+                        "description": "Forbidden, Provided batch resource doesn't exist ."
+                    },
+                    "503": {
+                        "description": "Service Unavailable, Unable to process request. Try later."
+                    }
+                }
+            }
+        },
+        "/api/v3/tasks/{task_id}": {
+            "get": {
+                "tags": [
+                    "Task"
+                ],
+                "description": "<b> GET Task Details</b> </br> Get the status of  batch create request.Task end point will be provided in the response header of create batch request.</br></br> <b>Different state of task</b></br> <li>pending</li> <li>submitted</li> <li>processing</li> <li>completed</li> <li>error</li>",
+                "operationId": "getTask",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "application/json",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "task_id",
+                        "in": "path",
+                        "description": "Task identifier",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK. Task response",
+                        "schema": {
+                            "$ref": "#/definitions/taskResponce"
+                        }
+                    },
+                    "303": {
+                        "description": "See Other, If the task has been processed completely. Returns Batch End point in response header.",
+                        "headers": {
+                            "Location": {
+                                "type": "string",
+                                "description": "http:///www.livepaperapi.com/api/v3/batches/n7HyJKK."
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden, User doesn't have access to this resource."
+                    },
+                    "404": {
+                        "description": "Not Found, Invalid task id."
+                    },
+                    "500": {
+                        "description": "InternalServerError"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Task"
+                ],
+                "description": "<b>Update Task</b></br> When a batch job is created, initial status is 'pending'.Use this API to update task status.Currently supported status is \"submitted\". Batch processing will not be started unless the task status is \"submitted\".",
+                "operationId": "putTask",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "task_id",
+                        "in": "path",
+                        "description": "Task identifier",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "application/json",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "batch",
+                        "in": "body",
+                        "description": "Update task status to submitted.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/newTask"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK, Task response",
+                        "schema": {
+                            "$ref": "#/definitions/taskResponce"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized, If the authentication fails."
+                    },
+                    "403": {
+                        "description": "Forbidden, If user doesn't have access to this resource."
+                    },
+                    "404": {
+                        "description": "Not found, If resource doesnt exists."
+                    },
+                    "500": {
+                        "description": "Internal Server Error,  Server unable to process current request."
+                    }
+                }
+            }
+        },
+        "/api/v3/properties": {
+            "put": {
+                "tags": [
+                    "Properties "
+                ],
+                "description": "Attaches properties to a resource.A resource can be of any type i.e Project, Batch or  UID.",
+                "operationId": "createProperty",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "property  payload in",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/property"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "InternalServerError"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Properties "
+                ],
+                "description": "Get a property of an uid or a project or batch.Properties are supported at variour level and the precedence is as below <ul><li>project</li><li>batch</li><li>uid</li><ul>",
+                "operationId": "getProperties",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "in": "query",
+                        "type": "string",
+                        "name": "resourcetype",
+                        "description": "Resource type.A resource type can be  project, batch or Uid"
+                    },
+                    {
+                        "in": "query",
+                        "type": "string",
+                        "name": "project",
+                        "description": "The project within which the properties will be searched.The format for the query param is <p><b>project=p1,p2,p3</p>"
+                    },
+                    {
+                        "in": "query",
+                        "type": "string",
+                        "name": "batch",
+                        "description": "The batch within which the the properties will be searched.The format for the query param is <p><b>batch=b1,b2,b3</p>"
+                    },
+                    {
+                        "in": "query",
+                        "type": "string",
+                        "name": "uid",
+                        "description": "The uid's for which properties will be searchedThe format for the query param is <p><b>batch=uid1,uid2,uid3</p>"
+                    },
+                    {
+                        "in": "query",
+                        "type": "string",
+                        "name": "name",
+                        "description": "Name of Property to filter on"
+                    },
+                    {
+                        "in": "query",
+                        "type": "string",
+                        "name": "value",
+                        "description": "Value of Property to filter on"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/propertyresponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "InternalServerError"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Properties "
+                ],
+                "description": "Delete a property of an uid or a project or batch.",
+                "operationId": "deleteProperties",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "access token key",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "Content Type",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "Properties",
+                        "description": "JSON Object",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "properties"
+                            ],
+                            "properties": {
+                                "properties": {
+                                    "type": "array",
+                                    "description": "Array of properties to delete.",
+                                    "items": {
+                                        "$ref": "#/definitions/deletedproperties"
+                                    },
+                                    "example": [
+                                        {
+                                            "resourceType": "project",
+                                            "resourceId": "kjxyb",
+                                            "name": "color"
+                                        },
+                                        {
+                                            "resourceType": "uid",
+                                            "resourceId": "pqszaxyb4kkkl;",
+                                            "name": "publisher"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.Request is processed successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "InternalServerError"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "taskResponce": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "xksksksnsj"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "submitted"
+                },
+                "link": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/tasklink"
+                    }
+                }
+            }
+        },
+        "newTask": {
+            "type": "object",
+            "required": [
+                "batch"
+            ],
+            "properties": {
+                "batch": {
+                    "$ref": "#/definitions/task"
+                }
+            }
+        },
+        "tasklink": {
+            "type": "object",
+            "required": [
+                "rel",
+                "href"
+            ],
+            "properties": {
+                "rel": {
+                    "type": "string",
+                    "example": "self"
+                },
+                "href": {
+                    "type": "string",
+                    "example": "https://batch.livepaperapi.com/api/v3/tasks/xksksksnsj     "
+                }
+            }
+        },
+        "task": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "submitted"
+                }
+            }
+        },
+        "newBatch": {
+            "type": "object",
+            "required": [
+                "batch"
+            ],
+            "properties": {
+                "batch": {
+                    "$ref": "#/definitions/batch"
+                }
+            }
+        },
+        "batch": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Batch for test"
+                },
+                "projectId": {
+                    "type": "string",
+                    "example": "1TG6M3"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "watermark"
+                },
+                "count": {
+                    "type": "string",
+                    "example": 10
+                },
+                "payoffId": {
+                    "type": "string",
+                    "example": "1TG6M3xrtyuuifrt"
+                }
+            }
+        },
+        "batchCustom": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "count": {
+                    "type": "string"
+                },
+                "payoff": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        },
+                        "url": {
+                            "type": "string"
+                        },
+                        "public": {
+                            "$ref": "#/definitions/public"
+                        },
+                        "privateData": {
+                            "$ref": "#/definitions/privateData"
+                        }
+                    }
+                }
+            }
+        },
+        "public": {
+            "type": "object",
+            "required": [
+                "url"
+            ],
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "example": "http://www.mywebsite.com"
+                }
+            }
+        },
+        "privateData": {
+            "type": "object",
+            "required": [
+                "data"
+            ],
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/data"
+                }
+            }
+        },
+        "data": {
+            "type": "object",
+            "required": [
+                "secureURL",
+                "reportURL"
+            ],
+            "properties": {
+                "secureURL": {
+                    "type": "string"
+                },
+                "reportURL": {
+                    "type": "string"
+                }
+            }
+        },
+        "listBatches": {
+            "type": "object",
+            "properties": {
+                "batches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/batchResponce"
+                    }
+                }
+            }
+        },
+        "batchResponce": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "manjhusksksnsj"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "test1"
+                },
+                "dateCreated": {
+                    "type": "string",
+                    "example": "2014-06-05T11:42:23.000+0000"
+                },
+                "count": {
+                    "type": "string",
+                    "example": 10
+                },
+                "type": {
+                    "type": "string",
+                    "example": "watermark"
+                },
+                "payoffId": {
+                    "type": "string",
+                    "example": "1TG6M3xrtyuuifrt"
+                },
+                "link": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/batchlink"
+                    },
+                    "example": [
+                        {
+                            "rel": "self",
+                            "href": "https://www.livepaperapi.com/api/v3/batches/manjhusksksnsj"
+                        },
+                        {
+                            "rel": "payoff",
+                            "href": "https://www.livepaperapi.com/api/v3/payoffs/1TG6M3xrtyuuifrt"
+                        },
+                        {
+                            "rel": "uids",
+                            "href": "https://storage.livepaperapi.com/objects/v3/batches/manjhusksksnsj/uids/download"
+                        }
+                    ]
+                }
+            }
+        },
+        "batchlink": {
+            "type": "object",
+            "required": [
+                "rel",
+                "href"
+            ],
+            "properties": {
+                "rel": {
+                    "type": "string"
+                },
+                "href": {
+                    "type": "string"
+                }
+            }
+        },
+        "batchResponceforgtin": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "xksksksnsj"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "test1"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "test1"
+                },
+                "gtin": {
+                    "type": "string",
+                    "example": "test1"
+                },
+                "startSerialNumber": {
+                    "type": "string",
+                    "example": "test1"
+                },
+                "dateCreated": {
+                    "type": "string",
+                    "example": "2014-06-05T11:42:23.000+0000"
+                },
+                "link": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/batchlink"
+                    }
+                }
+            }
+        },
+        "membershipResponse": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "xksksksnsj"
+                },
+                "dateCreated": {
+                    "type": "string",
+                    "example": "2014-06-05T11:42:23.000+0000"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "owner"
+                },
+                "user": {
+                    "type": "object",
+                    "required": [
+                        "emailId"
+                    ],
+                    "properties": {
+                        "emailId": {
+                            "type": "string",
+                            "example": "user@gmail.com"
+                        },
+                        "firstName": {
+                            "type": "string",
+                            "example": "John"
+                        },
+                        "lastName": {
+                            "type": "string",
+                            "example": "Doe"
+                        }
+                    }
+                },
+                "link": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/membershiplink"
+                    }
+                }
+            }
+        },
+        "rulesresponse": {
+            "type": "object",
+            "required": [
+                "rules"
+            ],
+            "properties": {
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rules"
+                    },
+                    "example": [
+                        {
+                            "name": "allowedCountries",
+                            "value": "UK,IN",
+                            "effect": "alert"
+                        },
+                        {
+                            "name": "public_scan_exceeds_count",
+                            "value": "5",
+                            "effect": "alert"
+                        },
+                        {
+                            "name": "private_scan_exceeds_count",
+                            "value": "5",
+                            "effect": "alert"
+                        },
+                        {
+                            "name": "scan_inactive_msg",
+                            "value": "true",
+                            "effect": "alert"
+                        },
+                        {
+                            "name": "allowedCountries",
+                            "value": [
+                                "UK",
+                                "IN"
+                            ],
+                            "effect": "warning"
+                        },
+                        {
+                            "name": "public_scan_exceeds_count",
+                            "value": "5",
+                            "effect": "warning"
+                        }
+                    ]
+                }
+            }
+        },
+        "accountlink": {
+            "type": "object",
+            "required": [
+                "rel",
+                "href"
+            ],
+            "properties": {
+                "rel": {
+                    "type": "string",
+                    "example": "self"
+                },
+                "href": {
+                    "type": "string",
+                    "example": "https://www.livepaperapi.com/api/v3/account/0000g07wgygmdsld9u8onuo55rpufy2o"
+                }
+            }
+        },
+        "projectlink": {
+            "type": "object",
+            "required": [
+                "rel",
+                "href"
+            ],
+            "properties": {
+                "rel": {
+                    "type": "string",
+                    "example": "self"
+                },
+                "href": {
+                    "type": "string",
+                    "example": "https://www.livepaperapi.com/api/v3/project/zZLsnjy"
+                }
+            }
+        },
+        "membershiplink": {
+            "type": "object",
+            "required": [
+                "rel",
+                "href"
+            ],
+            "properties": {
+                "rel": {
+                    "type": "string",
+                    "example": "self"
+                },
+                "href": {
+                    "type": "string",
+                    "example": "https://www.livepaperapi.com/api/v3/project/zZLsnjy/memberships/n8UjZy_nSei1ZirO4huljA"
+                }
+            }
+        },
+        "ruleslink": {
+            "type": "object",
+            "required": [
+                "rel",
+                "href"
+            ],
+            "properties": {
+                "rel": {
+                    "type": "string",
+                    "example": "self"
+                },
+                "href": {
+                    "type": "string",
+                    "example": "https://www.livepaperapi.com/api/v3/project/zZLsnjy/rules/s09_AqHhTaCx2-2AQE1W4Q"
+                }
+            }
+        },
+        "user": {
+            "type": "object",
+            "required": [
+                "emailId"
+            ],
+            "properties": {
+                "emailId": {
+                    "type": "string",
+                    "example": "user@gmail.com"
+                }
+            }
+        },
+        "newuser": {
+            "type": "object",
+            "required": [
+                "name",
+                "scope"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "user@gmail.com"
+                },
+                "scope": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "example": [
+                            "default",
+                            "user_service"
+                        ]
+                    }
+                }
+            }
+        },
+        "newuserresponse": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "user@gmail.com"
+                },
+                "clientId": {
+                    "type": "string",
+                    "example": "056vwtsy03zkexce9rjxwii65hmbb84p"
+                },
+                "clientSecret": {
+                    "type": "string",
+                    "example": "xa35tHWOUr7NFHfNEzse1Omk9fwefnor"
+                },
+                "dateCreated": {
+                    "type": "string",
+                    "example": "2014-06-02T15:37:07.000+0530"
+                },
+                "dateModified": {
+                    "type": "string",
+                    "example": "2014-06-02T15:37:07.000+0530"
+                },
+                "scope": {
+                    "items": {
+                        "type": "string",
+                        "example": [
+                            "default",
+                            "user_service"
+                        ]
+                    }
+                },
+                "link": {
+                    "items": {
+                        "$ref": "#/definitions/ruleslink"
+                    },
+                    "example": [
+                        {
+                            "rel": "self",
+                            "href": "https://dev.livepaperapi.com/auth/v3/users/056vwtsy03zkexce9rjxwii65hmbb84p"
+                        },
+                        {
+                            "rel": "defaultAccount",
+                            "href": "https://dev.livepaperapi.com/auth/v3/accounts/056vwtsy03zkexce9rjxwii65hmbb84p"
+                        }
+                    ]
+                }
+            }
+        },
+        "newMembership": {
+            "type": "object",
+            "required": [
+                "membership"
+            ],
+            "properties": {
+                "membership": {
+                    "$ref": "#/definitions/membership"
+                }
+            }
+        },
+        "membership": {
+            "type": "object",
+            "required": [
+                "user"
+            ],
+            "properties": {
+                "user": {
+                    "$ref": "#/definitions/user"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "owner"
+                }
+            }
+        },
+        "newRules": {
+            "type": "object",
+            "required": [
+                "rules"
+            ],
+            "properties": {
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rules"
+                    },
+                    "example": [
+                        {
+                            "name": "allowedCountries",
+                            "value": "UK,IN",
+                            "effect": "alert"
+                        },
+                        {
+                            "name": "public_scan_exceeds_count",
+                            "value": "5",
+                            "effect": "alert"
+                        },
+                        {
+                            "name": "private_scan_exceeds_count",
+                            "value": "5",
+                            "effect": "alert"
+                        }
+                    ]
+                }
+            }
+        },
+        "rules": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "effect": {
+                    "type": "string"
+                }
+            }
+        },
+        "event": {
+            "type": "object",
+            "properties": {
+                "resourceType": {
+                    "type": "string",
+                    "example": "xyz"
+                },
+                "resourceList": {
+                    "type": "string",
+                    "example": "abc"
+                },
+                "eventTime": {
+                    "type": "string",
+                    "example": "2014-06-02T15:37:07.000+0531"
+                },
+                "action": {
+                    "type": "string",
+                    "example": "fg"
+                },
+                "bizState": {
+                    "type": "string",
+                    "example": "stateName"
+                },
+                "bizLocation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bizLocations",
+                        "example": [
+                            {
+                                "type": "test",
+                                "value": "xy"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "eventResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "hrfksdf"
+                },
+                "resourceType": {
+                    "type": "string",
+                    "example": "xyz"
+                },
+                "resourceList": {
+                    "type": "string",
+                    "example": "abc"
+                },
+                "eventTime": {
+                    "type": "string",
+                    "example": "2014-06-02T15:37:07.000+0530"
+                },
+                "action": {
+                    "type": "string",
+                    "example": "fg"
+                },
+                "bizState": {
+                    "type": "string",
+                    "example": "stateName"
+                },
+                "bizLocation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/bizLocations",
+                        "example": [
+                            {
+                                "type": "test",
+                                "value": "xy"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "bizLocations": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "properties": {
+            "type": "object",
+            "properties": {
+                "resourceType": {
+                    "type": "string"
+                },
+                "resourceId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "deletedproperties": {
+            "type": "object",
+            "properties": {
+                "resourceType": {
+                    "type": "string"
+                },
+                "resourceId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "property": {
+            "type": "object",
+            "properties": {
+                "properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/properties"
+                    },
+                    "example": [
+                        {
+                            "resourceType": "project",
+                            "resourceId": "kxwdmi",
+                            "name": "color",
+                            "value": "Blue"
+                        },
+                        {
+                            "resourceType": "project",
+                            "resourceId": "JK1wbd",
+                            "name": "color",
+                            "value": "Green"
+                        }
+                    ]
+                }
+            }
+        },
+        "propertyresponse": {
+            "type": "object",
+            "properties": {
+                "dateCreated": {
+                    "type": "string",
+                    "example": "2014-04-08T08:16:25.723+0000"
+                },
+                "dateModified": {
+                    "type": "string",
+                    "example": "2014-04-08T08:16:25.723+0000"
+                },
+                "properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/properties"
+                    },
+                    "example": [
+                        {
+                            "resourceType": "project",
+                            "resourceId": "kxwdmi",
+                            "name": "color",
+                            "value": "Blue"
+                        },
+                        {
+                            "resourceType": "project",
+                            "resourceId": "JK1wbd",
+                            "name": "color",
+                            "value": "Green"
+                        }
+                    ]
+                }
+            }
+        },
+        "project": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "jSKjxRarRGeRRlj_9hSL7A"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "MyNewProject"
+                },
+                "brand": {
+                    "type": "string",
+                    "example": "hp"
+                },
+                "validationInfo": {
+                    "$ref": "#/definitions/validateproperties"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "This is the description of linkcreationstudio"
+                },
+                "dateCreated": {
+                    "type": "string",
+                    "example": "2014-04-08T08:16:25.723+0000"
+                },
+                "dateModified": {
+                    "type": "string",
+                    "example": "2014-04-08T08:16:25.723+0000"
+                },
+                "link": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/projectlink"
+                    }
+                },
+                "accountId": {
+                    "type": "string",
+                    "example": "056vwtsy03zkexce9rjxwii65hmbb84p"
+                },
+                "createdBy": {
+                    "$ref": "#/definitions/user"
+                }
+            }
+        },
+        "newproject": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "newproject"
+                },
+                "brand": {
+                    "type": "string",
+                    "example": "hp"
+                },
+                "validationInfo": {
+                    "$ref": "#/definitions/validateproperties"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "This is the description of linkcreationstudio"
+                }
+            }
+        },
+        "validateproperties": {
+            "type": "object",
+            "properties": {
+                "productUrl": {
+                    "type": "string",
+                    "example": "www.linkcreationstudio.com"
+                },
+                "reportFraudURL": {
+                    "type": "string",
+                    "example": "www.google.com"
+                },
+                "anonymousUserSeesValidation": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "propertiesobject": {
+            "type": "object",
+            "properties": {
+                "Properties": {
+                    "$ref": "#/definitions/propertiesmap"
+                }
+            }
+        },
+        "propertiesmap": {
+            "type": "object",
+            "description": "a (key, MapItem) map. `default`is an example key",
+            "additionalProperties": {
+                "$ref": "#/definitions/MapItem"
+            }
+        },
+        "MapItem": {
+            "type": "string",
+            "example": "value"
+        },
+        "accountsobject": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "$ref": "#/definitions/account"
+                }
+            }
+        },
+        "account": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Test Client"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "testClientID"
+                },
+                "ownerId": {
+                    "type": "string",
+                    "example": "testClientID"
+                },
+                "description": {
+                    "type": "string",
+                    "example": null
+                },
+                "dateCreated": {
+                    "type": "string",
+                    "example": "2013-06-10 12:40:18.000+000"
+                },
+                "dateModified": {
+                    "type": "string",
+                    "example": "2013-06-10 12:40:18.000+000"
+                },
+                "customerKey": {
+                    "type": "string",
+                    "example": "4e4f39b"
+                },
+                "plan": {
+                    "type": "string",
+                    "example": "triggerSegregated"
+                },
+                "quotas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/quotas"
+                    }
+                },
+                "link": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/accountlink"
+                    }
+                }
+            }
+        },
+        "quotas": {
+            "type": "object",
+            "required": [
+                "type",
+                "limit"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "example": "qrcode"
+                },
+                "limit": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 100001
+                },
+                "used": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 790
+                }
+            }
+        },
+        "accessToken": {
+            "type": "object",
+            "required": [
+                "accessToken"
+            ],
+            "properties": {
+                "accessToken": {
+                    "type": "string",
+                    "example": "YWxzMGdv6T...5MXBpQVZNTVE9"
+                },
+                "scope": {
+                    "type": "string",
+                    "example": "default"
+                }
+            }
+        },
+        "accessTokenValidateRes": {
+            "type": "object",
+            "required": [
+                "clientId"
+            ],
+            "properties": {
+                "createdDate": {
+                    "type": "string",
+                    "example": 1497944996038
+                },
+                "endDate": {
+                    "type": "string",
+                    "example": 1497948596038
+                },
+                "clientId": {
+                    "type": "string",
+                    "example": "testClientID"
+                },
+                "scope": {
+                    "type": "string",
+                    "example": "default"
+                }
+            }
+        },
+        "param": {
+            "type": "string",
+            "example": "grant_type=client_credentials&scope=default"
+        },
+        "errorModel": {
+            "type": "object",
+            "required": [
+                "httpCode",
+                "errorCode"
+            ],
+            "properties": {
+                "requestId": {
+                    "type": "string",
+                    "example": "a554d520-2584-4e2b-b5e9-329ef79d0978"
+                },
+                "httpCode": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "errorDescription": {
+                    "type": "string",
+                    "example": "<dynamic error>"
+                },
+                "errorCode": {
+                    "type": "string",
+                    "example": "<dynamic error code>"
+                }
+            }
+        }
+    },
+    "host": "virtserver.swaggerhub.com",
+    "basePath": "/IPGPTP/Serialization/1.0.0"
+}
